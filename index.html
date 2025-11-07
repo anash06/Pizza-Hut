@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anwar Al Khaleej - Order & Billing System</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🍽️ Anwar Al Khaleej</h1>
+            <nav class="tabs">
+                <button class="tab-btn active" data-tab="menu">Menu</button>
+                <button class="tab-btn" data-tab="cart">Cart & Billing</button>
+                <button class="tab-btn" data-tab="history">Order History</button>
+                <button class="tab-btn" data-tab="manage">Manage Menu</button>
+                <button class="tab-btn" data-tab="reports">Sales Report</button>
+            </nav>
+        </header>
+
+        <!-- Menu Section -->
+        <section id="menu" class="tab-content active">
+            <h2>Our Menu</h2>
+            <div class="menu-grid" id="menuGrid">
+                <!-- Menu items will be dynamically loaded here -->
+            </div>
+        </section>
+
+        <!-- Cart & Billing Section -->
+        <section id="cart" class="tab-content">
+            <h2>Shopping Cart</h2>
+            <div class="cart-container">
+                <div class="cart-items" id="cartItems">
+                    <p class="empty-cart">Your cart is empty</p>
+                </div>
+                <div class="bill-summary">
+                    <h3>Bill Summary</h3>
+                    <div class="bill-details">
+                        <div class="bill-row total">
+                            <span>Total:</span>
+                            <span id="grandTotal">₹0.00</span>
+                        </div>
+                    </div>
+                    <div class="cart-actions">
+                        <button class="btn btn-secondary" id="clearCart">Clear Cart</button>
+                        <button class="btn btn-success" id="paidBtn">Paid</button>
+                        <button class="btn btn-primary" id="printBill">Print Bill</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Manage Menu Section -->
+        <section id="manage" class="tab-content">
+            <h2>Manage Menu</h2>
+            <div class="manage-container">
+                <div class="menu-form-section">
+                    <h3 id="formTitle">Add New Item</h3>
+                    <form id="menuForm">
+                        <input type="hidden" id="itemId">
+                        <div class="form-group">
+                            <label for="itemName">Item Name:</label>
+                            <input type="text" id="itemName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="itemCategory">Category:</label>
+                            <select id="itemCategory" required>
+                                <option value="Pizza">Pizza</option>
+                                <option value="Burger">Burger</option>
+                                <option value="Sandwich">Sandwich</option>
+                                <option value="Tandoori">Tandoori</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="itemPrice">Price (₹):</label>
+                            <input type="number" id="itemPrice" step="0.01" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="itemDescription">Description:</label>
+                            <textarea id="itemDescription" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="itemImage">Image URL:</label>
+                            <input type="text" id="itemImage" placeholder="Enter image URL">
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary" id="saveItem">Add Item</button>
+                            <button type="button" class="btn btn-secondary" id="cancelEdit" style="display:none;">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="menu-list-section">
+                    <h3>Menu Items</h3>
+                    <div class="admin-menu-list" id="adminMenuList">
+                        <!-- Menu items for admin will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Order History Section -->
+        <section id="history" class="tab-content">
+            <h2>Order History</h2>
+            <div class="history-container">
+                <div class="history-filters">
+                    <label for="historyDateFilter">Filter by Date:</label>
+                    <input type="date" id="historyDateFilter">
+                    <button class="btn btn-secondary" id="clearHistoryFilter">Clear Filter</button>
+                    <button class="btn btn-primary" id="refreshHistory">Refresh</button>
+                </div>
+                <div class="history-summary">
+                    <div class="summary-card">
+                        <h3>Total Orders</h3>
+                        <p class="summary-value" id="historyTotalOrders">0</p>
+                    </div>
+                    <div class="summary-card">
+                        <h3>Total Amount</h3>
+                        <p class="summary-value" id="historyTotalAmount">₹0.00</p>
+                    </div>
+                </div>
+                <div class="history-list" id="historyList">
+                    <!-- Order history will be loaded here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Sales Report Section -->
+        <section id="reports" class="tab-content">
+            <h2>Daily Sales Report</h2>
+            <div class="reports-container">
+                <div class="report-filters">
+                    <label for="reportDate">Select Date:</label>
+                    <input type="date" id="reportDate">
+                    <button class="btn btn-primary" id="generateReport">Generate Report</button>
+                    <button class="btn btn-secondary" id="downloadPDF">Download PDF</button>
+                </div>
+                <div class="report-summary" id="reportSummary">
+                    <div class="summary-card">
+                        <h3>Total Sales</h3>
+                        <p class="summary-value" id="totalSales">₹0.00</p>
+                    </div>
+                    <div class="summary-card">
+                        <h3>Total Orders</h3>
+                        <p class="summary-value" id="totalOrders">0</p>
+                    </div>
+                    <div class="summary-card">
+                        <h3>Average Order Value</h3>
+                        <p class="summary-value" id="avgOrderValue">₹0.00</p>
+                    </div>
+                </div>
+                <div class="report-table-container">
+                    <table class="report-table" id="reportTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Total Orders</th>
+                                <th>Total Sales</th>
+                                <th>Average Order Value</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reportTableBody">
+                            <!-- Report data will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- QR Code Modal -->
+    <div id="qrModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Payment QR Code</h2>
+            <div id="qrCodeContainer"></div>
+            <p class="qr-amount">Amount: <strong id="qrAmount">₹0.00</strong></p>
+            <p class="qr-info">Scan to pay using UPI</p>
+            <p class="qr-upi-id" id="upiIdDisplay" style="font-size: 0.9em; color: #666; margin-top: 10px;"></p>
+        </div>
+    </div>
+
+    <!-- Print Bill Section (hidden, only for printing) -->
+    <div id="printBillContent" class="print-bill" style="display:none;">
+        <div class="bill-header">
+            <h2>Anwar Al Khaleej - Bill</h2>
+            <p>Kayalpattinam</p>
+            <p>Ph No: 7418304663</p>
+            <p id="billDate"></p>
+        </div>
+        <div class="bill-items" id="printBillItems"></div>
+        <div class="bill-totals" id="printBillTotals"></div>
+        <div class="bill-footer">
+            <p>Thank you for your order!</p>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script src="js/menu.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/qrcode.js"></script>
+    <script src="js/admin.js"></script>
+    <script src="js/orderHistory.js"></script>
+    <script src="js/reports.js"></script>
+</body>
+</html>
+
